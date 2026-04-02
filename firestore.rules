@@ -1,0 +1,111 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Fields:
+    //   - nome: string (required)
+    //   - email: string (required, email format)
+    //   - role: string (required, ['coordenador', 'professor', 'developer', 'responsavel'])
+    //
+    // Collection: turmas, disciplinas, alunos, ocorrencias, config, professores, notas, horarios, tarefas
+    // [Detailed schemas in firebase-blueprint.json]
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'developer' ||
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coordenador' ||
+         (request.auth.token.email == "criativamentebrasil@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isProfessor() {
+      return isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'professor';
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['nome', 'email', 'role']) &&
+             data.nome is string && data.nome.size() > 0 && data.nome.size() < 100 &&
+             isValidEmail(data.email) &&
+             data.role in ['coordenador', 'professor', 'developer', 'responsavel'];
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isAuthenticated() && isValidUser(request.resource.data) && (isOwner(userId) || isAdmin());
+      allow update: if isAuthenticated() && isValidUser(request.resource.data) && (isOwner(userId) || isAdmin());
+    }
+
+    match /turmas/{turmaId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    match /disciplinas/{disciplinaId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    match /alunos/{alunoId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() || isProfessor();
+    }
+
+    match /ocorrencias/{ocorrenciaId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() || isProfessor();
+    }
+
+    match /config/{configId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    match /professores/{professorId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    match /notas/{notaId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() || isProfessor();
+    }
+
+    match /horarios/{horarioId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    match /tarefas/{tarefaId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() || isProfessor();
+    }
+
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}

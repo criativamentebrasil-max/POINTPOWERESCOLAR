@@ -1,0 +1,5 @@
+{
+  "name": "Remix: Remix: POINT\u0026POWER ESCOLAR",
+  "description": "Plataforma completa de gestão escolar com backend Firebase, autenticação de usuário, horários individuais e gerais, alertas por disciplina, ocorrências resolvidas e gamificação.",
+  "requestFramePermissions": []
+}

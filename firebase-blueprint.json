@@ -1,0 +1,169 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "nome": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["coordenador", "professor", "developer", "responsavel"] },
+        "professor_id": { "type": "number" },
+        "aluno_id": { "type": "number" }
+      },
+      "required": ["nome", "email", "role"]
+    },
+    "Turma": {
+      "title": "Turma",
+      "description": "Class group",
+      "type": "object",
+      "properties": {
+        "nome": { "type": "string" }
+      },
+      "required": ["nome"]
+    },
+    "Disciplina": {
+      "title": "Disciplina",
+      "description": "Subject",
+      "type": "object",
+      "properties": {
+        "nome": { "type": "string" }
+      },
+      "required": ["nome"]
+    },
+    "Aluno": {
+      "title": "Aluno",
+      "description": "Student information",
+      "type": "object",
+      "properties": {
+        "nome": { "type": "string" },
+        "avatar": { "type": "string" },
+        "turma_id": { "type": "number" },
+        "pontos": { "type": "number" },
+        "data_nascimento": { "type": "string" }
+      },
+      "required": ["nome", "turma_id"]
+    },
+    "Ocorrencia": {
+      "title": "Ocorrencia",
+      "description": "Occurrence record",
+      "type": "object",
+      "properties": {
+        "aluno_id": { "type": "number" },
+        "disciplina_id": { "type": "number" },
+        "tipo": { "type": "number" },
+        "type": { "type": "string", "enum": ["positive", "negative"] },
+        "descricao": { "type": "string" },
+        "pontos": { "type": "number" },
+        "data": { "type": "string" },
+        "unidade_id": { "type": "number" }
+      },
+      "required": ["aluno_id", "disciplina_id", "type", "descricao", "pontos", "data"]
+    },
+    "Config": {
+      "title": "Config",
+      "description": "Global configuration",
+      "type": "object",
+      "properties": {
+        "pergunta_seguranca": { "type": "string" },
+        "resposta_seguranca": { "type": "string" },
+        "unidades": { "type": "array", "items": { "type": "object" } },
+        "avatar_set": { "type": "string" },
+        "unidade_ativa_id": { "type": "number" }
+      }
+    },
+    "Professor": {
+      "title": "Professor",
+      "description": "Professor information",
+      "type": "object",
+      "properties": {
+        "nome": { "type": "string" },
+        "login": { "type": "string" },
+        "disciplinas_ids": { "type": "string" },
+        "turmas_ids": { "type": "string" }
+      },
+      "required": ["nome"]
+    },
+    "Nota": {
+      "title": "Nota",
+      "description": "Grade record",
+      "type": "object",
+      "properties": {
+        "aluno_id": { "type": "number" },
+        "disciplina_id": { "type": "number" },
+        "valor": { "type": "number" },
+        "data": { "type": "string" },
+        "descricao": { "type": "string" }
+      },
+      "required": ["aluno_id", "disciplina_id", "valor", "data"]
+    },
+    "HorarioProfessor": {
+      "title": "HorarioProfessor",
+      "description": "Professor schedule",
+      "type": "object",
+      "properties": {
+        "dia_semana": { "type": "number" },
+        "horario_inicio": { "type": "string" },
+        "horario_fim": { "type": "string" },
+        "turma_id": { "type": "number" },
+        "disciplina_id": { "type": "number" },
+        "professor_id": { "type": "number" }
+      },
+      "required": ["dia_semana", "horario_inicio", "horario_fim", "turma_id", "disciplina_id", "professor_id"]
+    },
+    "TarefaCasa": {
+      "title": "TarefaCasa",
+      "description": "Homework",
+      "type": "object",
+      "properties": {
+        "horario_id": { "type": "number" },
+        "data": { "type": "string" },
+        "descricao": { "type": "string" },
+        "corrigida": { "type": "number" }
+      },
+      "required": ["horario_id", "data", "descricao"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User documents"
+    },
+    "/turmas/{turmaId}": {
+      "schema": "Turma",
+      "description": "Turma documents"
+    },
+    "/disciplinas/{disciplinaId}": {
+      "schema": "Disciplina",
+      "description": "Disciplina documents"
+    },
+    "/alunos/{alunoId}": {
+      "schema": "Aluno",
+      "description": "Aluno documents"
+    },
+    "/ocorrencias/{ocorrenciaId}": {
+      "schema": "Ocorrencia",
+      "description": "Ocorrencia documents"
+    },
+    "/config/{configId}": {
+      "schema": "Config",
+      "description": "Config documents"
+    },
+    "/professores/{professorId}": {
+      "schema": "Professor",
+      "description": "Professor documents"
+    },
+    "/notas/{notaId}": {
+      "schema": "Nota",
+      "description": "Nota documents"
+    },
+    "/horarios/{horarioId}": {
+      "schema": "HorarioProfessor",
+      "description": "Horario documents"
+    },
+    "/tarefas/{tarefaId}": {
+      "schema": "TarefaCasa",
+      "description": "Tarefa documents"
+    }
+  }
+}
